@@ -1,50 +1,127 @@
-<div class="game-container">
-  <div class="card" [class.success-state]="showSuccess()">
-    
-    <div class="header">
-      <h1 class="glitch" data-text="QUESTION BOX">QUESTION BOX</h1>
-      <p class="subtitle">Drop your question for the game</p>
+<div class="app-wrapper">
+  
+  <div class="gallery-container">
+    <h2 class="gallery-title glitch" data-text="SELECT PLAYER">SELECT PLAYER</h2>
+    <div class="gallery-grid">
+      @for (player of players; track player.name) {
+        <div 
+          class="player-card" 
+          [class.active-player]="loggedInPlayer()?.name === player.name"
+          (click)="initiateLogin(player)">
+          <div class="player-image-wrapper">
+            <img [src]="'players/' + player.image" [alt]="player.name" class="player-image">
+          </div>
+          <div class="player-name">{{player.name}}</div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="game-container">
+    <div class="streak-panel">
+      <div class="streak-counter">
+        <span class="fire-icon" [class.active-fire]="streak() > 0">🔥</span>
+        Streak: {{streak()}}
+      </div>
+      <button class="submit-btn praise-btn" (click)="openPraiseSection()">PRAISE CEO</button>
     </div>
 
-    @if (showSuccess()) {
-      <div class="success-message">
-        <div class="check-icon">✓</div>
-        <h2>QUESTION SAVED!</h2>
-        <p>Get ready for the answers...</p>
+    <div class="card" [class.success-state]="showSuccess()">
+      <div class="header">
+        <h1 class="glitch" data-text="QUESTION BOX">QUESTION BOX</h1>
+        <p class="subtitle">Drop your question for the game</p>
       </div>
-    } @else {
-      <form [formGroup]="questionForm" (ngSubmit)="onSubmit()" class="game-form">
-        <div class="form-group">
-          <label for="playerName">PLAYER NAME</label>
-          <input 
-            type="text" 
-            id="playerName" 
-            formControlName="playerName" 
-            placeholder="Enter your gamertag"
-            [class.invalid]="questionForm.get('playerName')?.invalid && questionForm.get('playerName')?.touched"
-          >
-        </div>
 
-        <div class="form-group">
-          <label for="question">YOUR QUESTION</label>
-          <textarea 
-            id="question" 
-            formControlName="question" 
-            placeholder="What do you want to ask?"
-            rows="4"
-            [class.invalid]="questionForm.get('question')?.invalid && questionForm.get('question')?.touched"
-          ></textarea>
+      @if (showSuccess()) {
+        <div class="success-message">
+          <div class="check-icon">✓</div>
+          <h2>QUESTION SAVED!</h2>
+          <p>Get ready for the answers...</p>
         </div>
+      } @else {
+        <form [formGroup]="questionForm" (ngSubmit)="onSubmit()" class="game-form">
+          <div class="form-group">
+            <label for="playerName">PLAYER NAME</label>
+            <input 
+              type="text" 
+              id="playerName" 
+              formControlName="playerName" 
+              placeholder="Select a player or enter gamertag"
+              [class.invalid]="questionForm.get('playerName')?.invalid && questionForm.get('playerName')?.touched"
+              [readonly]="!!loggedInPlayer()"
+            >
+          </div>
 
-        <button type="submit" class="submit-btn" [disabled]="isSubmitting()">
-          @if (isSubmitting()) {
-            <span class="loading-spinner"></span> PROCESSING...
-          } @else {
-            <span class="btn-text">SUBMIT QUESTION</span>
-            <span class="btn-glitch"></span>
-          }
-        </button>
-      </form>
-    }
+          <div class="form-group">
+            <label for="question">YOUR QUESTION</label>
+            <textarea 
+              id="question" 
+              formControlName="question" 
+              placeholder="What do you want to ask?"
+              rows="4"
+              [class.invalid]="questionForm.get('question')?.invalid && questionForm.get('question')?.touched"
+            ></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn" [disabled]="isSubmitting()">
+            @if (isSubmitting()) {
+              <span class="loading-spinner"></span> PROCESSING...
+            } @else {
+              <span class="btn-text">SUBMIT QUESTION</span>
+              <span class="btn-glitch"></span>
+            }
+          </button>
+        </form>
+      }
+    </div>
   </div>
+
 </div>
+
+<!-- Login Modal -->
+@if (selectedPlayerForLogin()) {
+  <div class="modal-overlay">
+    <div class="card modal-card">
+      <h2 class="modal-title">ENTER CODE FOR {{selectedPlayerForLogin()?.name | uppercase}}</h2>
+      <div class="form-group">
+        <input 
+          type="password" 
+          [formControl]="loginCode" 
+          placeholder="4-digit code"
+          (keyup.enter)="confirmLogin()"
+        >
+        @if (loginError()) {
+          <span class="error-text">INVALID CODE, TRY AGAIN</span>
+        }
+      </div>
+      <div class="modal-actions">
+        <button class="submit-btn outline-btn" (click)="cancelLogin()">CANCEL</button>
+        <button class="submit-btn" (click)="confirmLogin()">CONFIRM</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Praise CEO Modal -->
+@if (showPraiseSection()) {
+  <div class="modal-overlay">
+    <div class="card modal-card praise-card">
+      <button class="close-btn" (click)="closePraiseSection()">&times;</button>
+      
+      <div class="ceo-image-container">
+        <img src="players/ceo.jpeg" alt="CEO" class="ceo-portrait">
+      </div>
+
+      @if (canPraiseToday()) {
+        <h3 class="praise-text">Will you praise our glorious CEO?</h3>
+        <button class="submit-btn praise-action-btn" (click)="praiseCeo()">ALL HAIL CEO</button>
+      } @else {
+        <div class="praise-success">
+          <div class="check-icon small-check">✓</div>
+          <h3>CEO IS PLEASED</h3>
+          <p>Come back tomorrow to maintain your streak.</p>
+        </div>
+      }
+    </div>
+  </div>
+}
