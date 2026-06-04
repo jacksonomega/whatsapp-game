@@ -1,0 +1,50 @@
+<div class="game-container">
+  <div class="card" [class.success-state]="showSuccess()">
+    
+    <div class="header">
+      <h1 class="glitch" data-text="QUESTION BOX">QUESTION BOX</h1>
+      <p class="subtitle">Drop your question for the game</p>
+    </div>
+
+    @if (showSuccess()) {
+      <div class="success-message">
+        <div class="check-icon">✓</div>
+        <h2>QUESTION SAVED!</h2>
+        <p>Get ready for the answers...</p>
+      </div>
+    } @else {
+      <form [formGroup]="questionForm" (ngSubmit)="onSubmit()" class="game-form">
+        <div class="form-group">
+          <label for="playerName">PLAYER NAME</label>
+          <input 
+            type="text" 
+            id="playerName" 
+            formControlName="playerName" 
+            placeholder="Enter your gamertag"
+            [class.invalid]="questionForm.get('playerName')?.invalid && questionForm.get('playerName')?.touched"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="question">YOUR QUESTION</label>
+          <textarea 
+            id="question" 
+            formControlName="question" 
+            placeholder="What do you want to ask?"
+            rows="4"
+            [class.invalid]="questionForm.get('question')?.invalid && questionForm.get('question')?.touched"
+          ></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn" [disabled]="isSubmitting()">
+          @if (isSubmitting()) {
+            <span class="loading-spinner"></span> PROCESSING...
+          } @else {
+            <span class="btn-text">SUBMIT QUESTION</span>
+            <span class="btn-glitch"></span>
+          }
+        </button>
+      </form>
+    }
+  </div>
+</div>
