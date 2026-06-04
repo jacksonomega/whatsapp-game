@@ -19,6 +19,12 @@
 
   @if (loggedInPlayer()) {
     <div class="game-container">
+      <div style="text-align: center; margin-bottom: 25px; padding: 15px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; border: 1px solid rgba(102, 252, 241, 0.2); box-shadow: 0 0 10px rgba(102, 252, 241, 0.1);">
+        <h2 style="color: var(--neon-cyan); margin: 0; font-family: 'Orbitron', sans-serif; font-size: 1.5rem; text-shadow: 0 0 8px rgba(102, 252, 241, 0.4);">
+          "{{loggedInPlayer()?.message}}"
+        </h2>
+      </div>
+
       <div class="streak-panel">
         <div class="streak-counter">
           <span class="fire-icon" [class.active-fire]="streak() > 0">🔥</span>

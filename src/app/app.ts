@@ -14,11 +14,11 @@ export class App implements OnInit {
   private http = inject(HttpClient);
 
   players = [
-    { name: 'Ceo', image: 'ceo.jpeg', code: '1234' },
-    { name: 'Jb', image: 'jb.jpeg', code: '5678' },
-    { name: 'Sofrita', image: 'sofrita.jpeg', code: '9012' },
-    { name: 'Wenhui', image: 'wenhui.jpeg', code: '3456' },
-    { name: 'Yixin', image: 'yixin.jpeg', code: '7890' }
+    { name: 'Ceo', image: 'ceo.jpeg', code: '1234', message: 'Mi Jefe el mejor' },
+    { name: 'Jb', image: 'jb.jpeg', code: '5678', message: 'No Potes más!!' },
+    { name: 'Sofrita', image: 'sofrita.jpeg', code: '9012', message: 'Aprende a montar en bici' },
+    { name: 'Wenhui', image: 'wenhui.jpeg', code: '3456', message: 'Deja las Drogas' },
+    { name: 'Yixin', image: 'yixin.jpeg', code: '7890', message: 'No te caigas' }
   ];
 
   selectedPlayerForLogin = signal<any>(null);
