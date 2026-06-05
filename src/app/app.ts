@@ -46,8 +46,16 @@ export class App implements OnInit {
   loadUserData(playerName: string) {
     const today = new Date().toDateString();
 
-    const savedStreak = localStorage.getItem(`streak_${playerName}`);
-    const savedLastPraised = localStorage.getItem(`lastPraisedDate_${playerName}`);
+    let savedStreak = localStorage.getItem(`streak_${playerName}`);
+    let savedLastPraised = localStorage.getItem(`lastPraisedDate_${playerName}`);
+
+    // Si no hay racha específica pero existe la antigua global, la migramos
+    if (!savedStreak && localStorage.getItem('streak')) {
+      savedStreak = localStorage.getItem('streak');
+      savedLastPraised = localStorage.getItem('lastPraisedDate');
+      if (savedStreak) localStorage.setItem(`streak_${playerName}`, savedStreak);
+      if (savedLastPraised) localStorage.setItem(`lastPraisedDate_${playerName}`, savedLastPraised);
+    }
 
     if (savedStreak && savedLastPraised) {
       const lastDate = new Date(savedLastPraised);
