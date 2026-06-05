@@ -12,13 +12,14 @@ import { HttpClient } from '@angular/common/http';
 export class App implements OnInit {
   title = 'whatsapp-game';
   private http = inject(HttpClient);
-
   players = [
-    { name: 'Ceo', image: 'ceo.jpeg', code: '1234', message: 'Mi Jefe el mejor' },
-    { name: 'Jb', image: 'jb.jpeg', code: '5678', message: 'No Potes más!!' },
-    { name: 'Sofrita', image: 'sofrita.jpeg', code: '9012', message: 'Aprende a montar en bici' },
-    { name: 'Wenhui', image: 'wenhui.jpeg', code: '3456', message: 'Deja las Drogas' },
-    { name: 'Yixin', image: 'yixin.jpeg', code: '7890', message: 'No te caigas' }
+    { name: 'Ceo', image: 'ceo.jpeg', code: '8492', message: 'Mi Jefe el mejor' },
+    { name: 'Jb', image: 'jb.jpeg', code: '3715', message: 'No Potes más!!' },
+    { name: 'Sofrita', image: 'sofrita.jpeg', code: '6294', message: 'Aprende a montar en bici' },
+    { name: 'Wenhui', image: 'wenhui.jpeg', code: '1837', message: 'Deja las Drogas' },
+    { name: 'Yixin', image: 'yixin.jpeg', code: '9451', message: 'No te caigas' },
+    { name: 'Fosia', image: 'fosia.jpeg', code: '5283', message: 'Dale duro Fosia' },
+    { name: 'Diddy', image: 'diddy.jpeg', code: '4916', message: 'El rey de la fiesta' }
   ];
 
   selectedPlayerForLogin = signal<any>(null);
@@ -29,7 +30,8 @@ export class App implements OnInit {
   streak = signal<number>(0);
   lastPraisedDate = signal<string | null>(null);
   showPraiseSection = signal<boolean>(false);
-
+  questionsAskedToday = signal<number>(0);
+  limitError = signal<boolean>(false);
 
   ngOnInit() {
     const savedPlayer = localStorage.getItem('loggedInPlayer');
@@ -37,27 +39,46 @@ export class App implements OnInit {
       const player = JSON.parse(savedPlayer);
       this.loggedInPlayer.set(player);
       this.questionForm.patchValue({ playerName: player.name });
+      this.loadUserData(player.name);
     }
+  }
 
-    const savedStreak = localStorage.getItem('streak');
-    const savedLastPraised = localStorage.getItem('lastPraisedDate');
+  loadUserData(playerName: string) {
+    const today = new Date().toDateString();
+
+    const savedStreak = localStorage.getItem(`streak_${playerName}`);
+    const savedLastPraised = localStorage.getItem(`lastPraisedDate_${playerName}`);
 
     if (savedStreak && savedLastPraised) {
       const lastDate = new Date(savedLastPraised);
-      const today = new Date();
+      const todayDate = new Date();
       lastDate.setHours(0, 0, 0, 0);
-      today.setHours(0, 0, 0, 0);
+      todayDate.setHours(0, 0, 0, 0);
 
-      const diffTime = today.getTime() - lastDate.getTime();
+      const diffTime = todayDate.getTime() - lastDate.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
       if (diffDays > 1) {
         this.streak.set(0);
-        localStorage.setItem('streak', '0');
+        localStorage.setItem(`streak_${playerName}`, '0');
       } else {
         this.streak.set(parseInt(savedStreak, 10));
       }
       this.lastPraisedDate.set(savedLastPraised);
+    } else {
+      this.streak.set(0);
+      this.lastPraisedDate.set(null);
+    }
+
+    const savedLastQuestionDate = localStorage.getItem(`lastQuestionDate_${playerName}`);
+    const savedQuestionsAsked = localStorage.getItem(`questionsAsked_${playerName}`);
+
+    if (savedLastQuestionDate === today) {
+      this.questionsAskedToday.set(parseInt(savedQuestionsAsked || '0', 10));
+    } else {
+      this.questionsAskedToday.set(0);
+      localStorage.setItem(`lastQuestionDate_${playerName}`, today);
+      localStorage.setItem(`questionsAsked_${playerName}`, '0');
     }
   }
 
@@ -82,6 +103,7 @@ export class App implements OnInit {
       this.loggedInPlayer.set(player);
       localStorage.setItem('loggedInPlayer', JSON.stringify(player));
       this.questionForm.patchValue({ playerName: player.name });
+      this.loadUserData(player.name);
       this.selectedPlayerForLogin.set(null);
     } else {
       this.loginError.set(true);
@@ -92,6 +114,10 @@ export class App implements OnInit {
     this.loggedInPlayer.set(null);
     localStorage.removeItem('loggedInPlayer');
     this.questionForm.patchValue({ playerName: '' });
+    this.streak.set(0);
+    this.lastPraisedDate.set(null);
+    this.questionsAskedToday.set(0);
+    this.limitError.set(false);
   }
 
   openPraiseSection() {
@@ -103,12 +129,16 @@ export class App implements OnInit {
   }
 
   praiseCeo() {
+    const playerName = this.loggedInPlayer()?.name;
+    if (!playerName) return;
+
     const today = new Date().toDateString();
     if (this.lastPraisedDate() !== today) {
       this.streak.update(s => s + 1);
       this.lastPraisedDate.set(today);
-      localStorage.setItem('streak', this.streak().toString());
-      localStorage.setItem('lastPraisedDate', today);
+      localStorage.setItem(`streak_${playerName}`, this.streak().toString());
+      localStorage.setItem(`lastPraisedDate_${playerName}`, today);
+      this.limitError.set(false);
     }
     setTimeout(() => {
       this.closePraiseSection();
@@ -117,6 +147,12 @@ export class App implements OnInit {
 
   canPraiseToday(): boolean {
     return this.lastPraisedDate() !== new Date().toDateString();
+  }
+
+  hasReachedLimit(): boolean {
+    const hasPraisedToday = this.lastPraisedDate() === new Date().toDateString();
+    const maxQuestions = hasPraisedToday ? 2 : 1;
+    return this.questionsAskedToday() >= maxQuestions;
   }
 
   questionForm = new FormGroup({
@@ -128,6 +164,12 @@ export class App implements OnInit {
   showSuccess = signal(false);
 
   onSubmit() {
+    if (this.hasReachedLimit()) {
+      this.limitError.set(true);
+      return;
+    }
+    this.limitError.set(false);
+
     if (this.questionForm.valid) {
       this.isSubmitting.set(true);
 
@@ -137,31 +179,35 @@ export class App implements OnInit {
       this.http.post(webhookUrl, payload).subscribe({
         next: (response) => {
           console.log('Successfully sent to n8n:', response);
-          this.isSubmitting.set(false);
-          this.showSuccess.set(true);
-          this.questionForm.reset();
-
-          setTimeout(() => {
-            this.showSuccess.set(false);
-          }, 3000);
+          this.handleSuccess();
         },
         error: (error) => {
           console.error('Error sending to n8n:', error);
-          this.isSubmitting.set(false);
-          // Even on error, you might want to show an error state or a success state 
-          // depending on how CORS is configured on the webhook. Let's show success 
-          // or alert the user. Since webhooks often return opaque responses due to CORS, 
-          // we'll assume success if it fired, or just log the error.
-          this.showSuccess.set(true);
-          this.questionForm.reset();
-
-          setTimeout(() => {
-            this.showSuccess.set(false);
-          }, 3000);
+          this.handleSuccess();
         }
       });
     } else {
       this.questionForm.markAllAsTouched();
     }
+  }
+
+  private handleSuccess() {
+    const playerName = this.loggedInPlayer()?.name;
+    if (playerName) {
+      this.questionsAskedToday.update(v => v + 1);
+      localStorage.setItem(`questionsAsked_${playerName}`, this.questionsAskedToday().toString());
+      localStorage.setItem(`lastQuestionDate_${playerName}`, new Date().toDateString());
+    }
+
+    this.isSubmitting.set(false);
+    this.showSuccess.set(true);
+    this.questionForm.reset();
+    if (playerName) {
+      this.questionForm.patchValue({ playerName });
+    }
+
+    setTimeout(() => {
+      this.showSuccess.set(false);
+    }, 3000);
   }
 }

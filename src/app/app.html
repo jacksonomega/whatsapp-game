@@ -40,6 +40,9 @@
         <div class="header">
           <h1 class="glitch" data-text="QUESTION BOX">QUESTION BOX</h1>
           <p class="subtitle">Drop your question for the game</p>
+          <p class="subtitle" style="color: var(--neon-cyan); font-size: 0.9rem; margin-top: 5px;">
+            Questions remaining today: {{ (canPraiseToday() ? 1 : 2) - questionsAskedToday() }}
+          </p>
         </div>
 
         @if (showSuccess()) {
@@ -73,14 +76,25 @@
             ></textarea>
           </div>
 
-          <button type="submit" class="submit-btn" [disabled]="isSubmitting()">
+          <button type="submit" class="submit-btn" [disabled]="isSubmitting() || hasReachedLimit()">
             @if (isSubmitting()) {
               <span class="loading-spinner"></span> PROCESSING...
+            } @else if (hasReachedLimit()) {
+              <span class="btn-text">LIMIT REACHED</span>
             } @else {
               <span class="btn-text">SUBMIT QUESTION</span>
               <span class="btn-glitch"></span>
             }
           </button>
+          
+          @if (limitError()) {
+            <div class="error-text" style="margin-top: 15px; text-align: center; color: var(--neon-pink);">
+              You've reached your question limit for today!
+              @if (canPraiseToday()) {
+                <br><br><span style="color: var(--neon-cyan); cursor: pointer; text-decoration: underline;" (click)="openPraiseSection()">Praise the CEO for an extra question!</span>
+              }
+            </div>
+          }
         </form>
       }
     </div>
