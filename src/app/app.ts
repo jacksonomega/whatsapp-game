@@ -18,7 +18,7 @@ export class App implements OnInit {
     { name: 'Sofrita', image: 'sofrita.jpeg', code: '6294', message: 'Aprende a montar bici' },
     { name: 'Wenhui', image: 'wenhui.jpeg', code: '1837', message: 'Deja las Drogas' },
     { name: 'Yixin', image: 'yixin.jpeg', code: '9451', message: 'No te caigas' },
-    { name: 'Fosia', image: 'fosia.jpeg', code: '5283', message: 'Cuidado con la Cocina' },
+    { name: 'Fosia', image: 'fosia.jpeg', code: '5283', message: 'No cocines más!!!' },
     { name: 'Diddy', image: 'diddy.jpeg', code: '4916', message: 'Retrasado desde pequeño' }
   ];
 
