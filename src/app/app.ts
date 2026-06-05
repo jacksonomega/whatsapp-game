@@ -15,11 +15,11 @@ export class App implements OnInit {
   players = [
     { name: 'Ceo', image: 'ceo.jpeg', code: '8492', message: 'Mi Jefe el mejor' },
     { name: 'Jb', image: 'jb.jpeg', code: '3715', message: 'No Potes más!!' },
-    { name: 'Sofrita', image: 'sofrita.jpeg', code: '6294', message: 'Aprende a montar en bici' },
+    { name: 'Sofrita', image: 'sofrita.jpeg', code: '6294', message: 'Cuidado con la Cocina' },
     { name: 'Wenhui', image: 'wenhui.jpeg', code: '1837', message: 'Deja las Drogas' },
     { name: 'Yixin', image: 'yixin.jpeg', code: '9451', message: 'No te caigas' },
     { name: 'Fosia', image: 'fosia.jpeg', code: '5283', message: 'Dale duro Fosia' },
-    { name: 'Diddy', image: 'diddy.jpeg', code: '4916', message: 'El rey de la fiesta' }
+    { name: 'Diddy', image: 'diddy.jpeg', code: '4916', message: 'Retrasado desde pequeño' }
   ];
 
   selectedPlayerForLogin = signal<any>(null);
