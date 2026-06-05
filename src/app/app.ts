@@ -15,10 +15,10 @@ export class App implements OnInit {
   players = [
     { name: 'Ceo', image: 'ceo.jpeg', code: '8492', message: 'Mi Jefe el mejor' },
     { name: 'Jb', image: 'jb.jpeg', code: '3715', message: 'No Potes más!!' },
-    { name: 'Sofrita', image: 'sofrita.jpeg', code: '6294', message: 'Cuidado con la Cocina' },
+    { name: 'Sofrita', image: 'sofrita.jpeg', code: '6294', message: 'Aprende a montar bici' },
     { name: 'Wenhui', image: 'wenhui.jpeg', code: '1837', message: 'Deja las Drogas' },
     { name: 'Yixin', image: 'yixin.jpeg', code: '9451', message: 'No te caigas' },
-    { name: 'Fosia', image: 'fosia.jpeg', code: '5283', message: 'Dale duro Fosia' },
+    { name: 'Fosia', image: 'fosia.jpeg', code: '5283', message: 'Cuidado con la Cocina' },
     { name: 'Diddy', image: 'diddy.jpeg', code: '4916', message: 'Retrasado desde pequeño' }
   ];
 
